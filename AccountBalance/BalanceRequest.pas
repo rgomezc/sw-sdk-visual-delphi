@@ -1,30 +1,12 @@
-unit BalanceRequest;
+﻿unit BalanceRequest;
 
 interface
 
 uses
   System.SysUtils,
-  System.Variants,
   System.Classes,
-  Vcl.Graphics,
-  StrUtils,
   System.JSON,
-  System.JSON.Builders,
-  System.JSON.Writers,
-  System.JSON.Readers,
-  System.JSON.BSON,
-  IdHTTP,
-  IdGlobal,
-  IdCoder,
-  IdCoder3to4,
-  IdCoderMIME,
-  IdMultipartFormData,
-  IdGlobalProtocols,
-  IPPeerClient,
-  REST.Client,
-  Data.Bind.Components,
-  Data.Bind.ObjectScope,
-  REST.Types;
+  SWHTTPClient;
 
 function GetBalance(URL, Token: String): String;
 
@@ -32,39 +14,37 @@ implementation
 
 function GetBalance(URL, Token: String): String;
 var
-  HTTP: TIdHTTP;
-  RequestBody: TStream;
-  ResponseBody: string;
+  HTTPClient: TSWHTTPClient;
+  ErrorResponse: TJSONObject;
 begin
-  HTTP := TIdHTTP.Create;
+
+  HTTPClient := TSWHTTPClient.Create;
   try
-		try
-      RequestBody := TStringStream.Create();
-      try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-				HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
-				url:= url+'/account/balance';
-				ResponseBody := HTTP.Get(URL);
-				Result := String(ResponseBody);
-      finally
-				RequestBody.Free;
-      end;
+    try
+      HTTPClient.HTTP.Request.Accept := 'application/json';
+      HTTPClient.HTTP.Request.ContentType := 'application/json';
+      HTTPClient.HTTP.Request.CustomHeaders.FoldLines := false;
+      HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
+      URL := URL + '/management/v2/api/users/balance';
+      Result := HTTPClient.Get(URL);
     except
-      on E: EIdHTTPProtocolException do
-      begin
-        Result := E.ErrorMessage;
-      end;
       on E: Exception do
       begin
-        Result := E.Message;
+        ErrorResponse := TJSONObject.Create;
+        try
+          ErrorResponse.AddPair('status', 'error');
+          ErrorResponse.AddPair('message', 'Error en la petición HTTP');
+          ErrorResponse.AddPair('messageDetail', E.Message);
+          Result := ErrorResponse.ToString;
+        finally
+          ErrorResponse.Free;
+        end;
       end;
     end;
   finally
-    HTTP.Free;
+    HTTPClient.Free;
   end;
-  ReportMemoryLeaksOnShutdown := false;
 end;
+
 
 end.

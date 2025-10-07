@@ -2,17 +2,15 @@
   Left = 0
   Top = 0
   Caption = 'TestServicesSW'
-  ClientHeight = 567
-  ClientWidth = 1116
+  ClientHeight = 714
+  ClientWidth = 1383
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poDesigned
-  PixelsPerInch = 96
   TextHeight = 13
   object Label105: TLabel
     Left = 880
@@ -33,7 +31,7 @@
     Top = 0
     Width = 1121
     Height = 569
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Autenticaci'#243'n'
@@ -100,6 +98,13 @@
         Height = 13
         Caption = 'Status'
       end
+      object Label37: TLabel
+        Left = 10
+        Top = 141
+        Width = 37
+        Height = 13
+        Caption = 'URL Api'
+      end
       object txtUser: TEdit
         Left = 8
         Top = 22
@@ -122,7 +127,7 @@
         Width = 169
         Height = 21
         TabOrder = 2
-        Text = 'http://services.test.sw.com.mx'
+        Text = 'https://services.test.sw.com.mx'
       end
       object txtToken: TEdit
         Left = 319
@@ -146,8 +151,8 @@
         TabOrder = 5
       end
       object Button1: TButton
-        Left = 7
-        Top = 159
+        Left = 8
+        Top = 199
         Width = 166
         Height = 49
         Caption = 'Generar Token'
@@ -174,6 +179,14 @@
         Width = 146
         Height = 21
         TabOrder = 9
+      end
+      object txtURLApi: TEdit
+        Left = 10
+        Top = 160
+        Width = 169
+        Height = 21
+        TabOrder = 10
+        Text = 'https://api.test.sw.com.mx'
       end
     end
     object TabSheet2: TTabSheet
@@ -884,7 +897,7 @@
             Top = 3
             Width = 1105
             Height = 510
-            ActivePage = TabSheet15
+            ActivePage = TabSheet14
             TabOrder = 0
             object TabSheet14: TTabSheet
               Caption = 'Cancelaci'#243'n por CSD'
@@ -2201,44 +2214,37 @@
         Height = 13
         Caption = 'timbresUtilizados'
       end
-      object Label113: TLabel
-        Left = 280
-        Top = 183
-        Width = 76
-        Height = 13
-        Caption = 'fechaExpiracion'
-      end
       object Label114: TLabel
         Left = 280
-        Top = 224
+        Top = 184
         Width = 42
         Height = 13
         Caption = 'unlimited'
       end
       object Label115: TLabel
         Left = 280
-        Top = 264
+        Top = 224
         Width = 84
         Height = 13
         Caption = 'timbresAsignados'
       end
       object Label116: TLabel
         Left = 280
-        Top = 304
+        Top = 264
         Width = 30
         Height = 13
         Caption = 'status'
       end
       object Label117: TLabel
         Left = 280
-        Top = 344
+        Top = 304
         Width = 42
         Height = 13
         Caption = 'message'
       end
       object Label118: TLabel
         Left = 280
-        Top = 384
+        Top = 344
         Width = 69
         Height = 13
         Caption = 'messageDetail'
@@ -2280,47 +2286,40 @@
         Height = 21
         TabOrder = 4
       end
-      object txtFechaExpiracion: TEdit
+      object txtUnlimited: TEdit
         Left = 424
-        Top = 180
+        Top = 181
         Width = 273
         Height = 21
         TabOrder = 5
       end
-      object txtUnlimited: TEdit
+      object txtTimbresAsignados: TEdit
         Left = 424
         Top = 221
         Width = 273
         Height = 21
         TabOrder = 6
       end
-      object txtTimbresAsignados: TEdit
+      object txtStatusBalance: TEdit
         Left = 424
         Top = 261
         Width = 273
         Height = 21
         TabOrder = 7
       end
-      object txtStatusBalance: TEdit
+      object txtMessageBalance: TEdit
         Left = 424
         Top = 301
         Width = 273
         Height = 21
         TabOrder = 8
       end
-      object txtMessageBalance: TEdit
+      object txtMessageDetailBalance: TEdit
         Left = 424
         Top = 341
         Width = 273
         Height = 21
         TabOrder = 9
-      end
-      object txtMessageDetailBalance: TEdit
-        Left = 424
-        Top = 381
-        Width = 273
-        Height = 21
-        TabOrder = 10
       end
     end
   end

@@ -8,21 +8,21 @@ type
 
 	TDataClass = class
   private
-		FidSaldoCliente: String;
-		FidClienteUsuario: String;
-		FsaldoTimbres: Integer;
-		FtimbresUtilizados: Integer;
-		FfechaExpiracion: String;
-		Funlimited: Boolean;
-		FtimbresAsignados: Integer;
+		FidUserBalance: String;
+		FidUser: String;
+		FstampsBalance: Integer;
+		FstampsUsed: Integer;
+		FstampsAssigned: Integer;
+		FisUnlimited: Boolean;
+		FexpirationDate: String;
 	public
-		property idSaldoCliente: String read FidSaldoCliente write FidSaldoCliente;
-		property idClienteUsuario: String read FidClienteUsuario write FidClienteUsuario;
-		property saldoTimbres: Integer read FsaldoTimbres write FsaldoTimbres;
-		property timbresUtilizados: Integer read FtimbresUtilizados write FtimbresUtilizados;
-		property fechaExpiracion: String read FfechaExpiracion write FfechaExpiracion;
-		property unlimited: Boolean read Funlimited write Funlimited;
-		property timbresAsignados: Integer read FtimbresAsignados write FtimbresAsignados;
+		property idUserBalance: String read FidUserBalance write FidUserBalance;
+		property idUser: String read FidUser write FidUser;
+		property stampsBalance: Integer read FstampsBalance write FstampsBalance;
+		property stampsUsed: Integer read FstampsUsed write FstampsUsed;
+		property stampsAssigned: Integer read FstampsAssigned write FstampsAssigned;
+		property isUnlimited: Boolean read FisUnlimited write FisUnlimited;
+		property expirationDate: String read FexpirationDate write FexpirationDate;
     constructor Create;
     destructor Destroy; override;
 		function ToJsonString: string;
@@ -32,13 +32,17 @@ type
 	TBalanceResponse = class
   private
 		FData: TDataClass;
-		FMessage: String;
-		FMessageDetail: String;
+    FMessage: String;
+    FMessageDetail: String;
+		FMeta: String;
+		FLinks: String;
 		FStatus: String;
 	public
 		property data: TDataClass read FData write FData;
-		property message: String read FMessage write FMessage;
-		property messageDetail: String read FMessageDetail write FMessageDetail;
+    property message: String read FMessage write FMessage;
+    property messageDetail: String read FMessageDetail write FMessageDetail;
+		property meta: String read FMeta write FMeta;
+		property links: String read FLinks write FLinks;
 		property status: String read FStatus write FStatus;
     constructor Create;
     destructor Destroy; override;

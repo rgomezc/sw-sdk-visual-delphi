@@ -1,4 +1,4 @@
-unit AuthenticationRequest;
+﻿unit AuthenticationRequest;
 
 interface
 
@@ -6,18 +6,10 @@ uses
   Winapi.Windows,
   Winapi.Messages,
   System.SysUtils,
-  System.Variants,
   System.Classes,
-  IdHTTP, IdGlobal,
-  IdCoder,
-  IdCoder3to4,
-  IdCoderMIME,
-  IdMultipartFormData,
-  IdGlobalProtocols,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, IPPeerClient, Vcl.StdCtrls, REST.Client,
-  Data.Bind.Components, Data.Bind.ObjectScope, REST.Types,
-  REST.Json,
-  Vcl.ComCtrls, Helper;
+  System.JSON,
+  SWHTTPClient,
+  IdHTTP;
 
 function AuthRequest(URL, User, Password: String): String;
 
@@ -25,41 +17,39 @@ implementation
 
 function AuthRequest(URL, User, Password: String): String;
 var
-  HTTP: TIdHTTP;
+  HTTPClient: TSWHTTPClient;
   RequestBody: TStream;
+  JSONBody: TJSONObject;
+  ErrorResponse: TJSONObject;
 begin
-
-  HTTP := TIdHTTP.Create;
+  HTTPClient := TSWHTTPClient.Create;
   try
     try
-      RequestBody := TStringStream.Create();
+      JSONBody := TJSONObject.Create;
       try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := False;
-        HTTP.Request.CustomHeaders.Add('user:' + User);
-        HTTP.Request.CustomHeaders.Add('password:' + Password);
-
+        JSONBody.AddPair('user', Trim(User));
+        JSONBody.AddPair('password', Trim(Password));
+        
+        RequestBody := TStringStream.Create(JSONBody.ToString, TEncoding.UTF8);
         try
-          Result := HTTP.Post(URL + '/security/authenticate', RequestBody);
+          HTTPClient.HTTP.Request.Accept := 'application/json';
+          HTTPClient.HTTP.Request.ContentType := 'application/json';
+          HTTPClient.HTTP.Request.CustomHeaders.FoldLines := False;
+          Result := HTTPClient.Post(URL + '/v2/security/authenticate', RequestBody);
         finally
           RequestBody.Free;
         end;
-      except
-        on E: EIdHTTPProtocolException do
-        begin
-          Result := E.ErrorMessage;
-        end;
-        on E: Exception do
-        begin
-          Result := E.Message;
-        end;
+      finally
+        JSONBody.Free;
       end;
-    finally
-      HTTP.Free;
+    except
+      on E: EIdHTTPProtocolException do
+        Result := E.ErrorMessage;
+      on E: Exception do
+        Result := E.Message;
     end;
-    ReportMemoryLeaksOnShutdown := False;
   finally
+    HTTPClient.Free;
   end;
 end;
 

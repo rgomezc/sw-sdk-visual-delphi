@@ -30,7 +30,8 @@ uses
   CancelationRelations in 'Cancelation\Relations\CancelationRelations.pas',
   Balance in 'AccountBalance\Balance.pas',
   BalanceRequest in 'AccountBalance\BalanceRequest.pas',
-  BalanceResponse in 'AccountBalance\BalanceResponse.pas';
+  BalanceResponse in 'AccountBalance\BalanceResponse.pas',
+  SWHTTPClient in 'Helpers\SWHTTPClient.pas';
 
 {$R *.res}
 
