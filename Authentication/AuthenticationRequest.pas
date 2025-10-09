@@ -27,8 +27,8 @@ begin
     try
       JSONBody := TJSONObject.Create;
       try
-        JSONBody.AddPair('user', Trim(User));
-        JSONBody.AddPair('password', Trim(Password));
+        JSONBody.AddPair('user', User);
+        JSONBody.AddPair('password', Password);
         
         RequestBody := TStringStream.Create(JSONBody.ToString, TEncoding.UTF8);
         try
