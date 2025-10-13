@@ -10,70 +10,55 @@ uses
   System.JSON.Writers,
   System.JSON.Readers,
   System.JSON.BSON,
-  IdHTTP, IdGlobal,
-  IdCoder,
-  IdCoder3to4,
-  IdCoderMIME,
-  IdMultipartFormData,
-  IdGlobalProtocols,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, IPPeerClient, Vcl.StdCtrls, REST.Client,
   Data.Bind.Components, Data.Bind.ObjectScope, REST.Types,
   Vcl.ComCtrls, StampRequest, StampResponseV1,
-  StampResponseV2, StampResponseV3, StampResponseV4;
+  StampResponseV2, StampResponseV3, StampResponseV4, SWHTTPClient, IdHTTP;
+
   function IssueServiceJSON(URL, Token, Json, Version: String): String;
 
 implementation
 
 function IssueServiceJSON(URL, Token, Json, Version: String): String;
 var
-  HTTP: TIdHTTP;
-  RequestBody: TStream;
+  HTTPClient: TSWHTTPClient;
+  RequestBody: TStringStream;
   IsUTF8: Boolean;
 begin
+  HTTPClient := TSWHTTPClient.Create;
   try
-    HTTP := TIdHTTP.Create;
-  finally
-  end;
-
-  try
+    RequestBody := nil;
     try
       IsUTF8 := TEncoding.UTF8.GetString(TEncoding.UTF8.GetBytes(Json)) = Json;
 
       if not IsUTF8 then
-      begin
-        RequestBody := TStringStream.Create(UTF8ToWideString(Json), TEncoding.UTF8);
-      end
+        RequestBody := TStringStream.Create(UTF8ToWideString(Json), TEncoding.UTF8)
       else
-      begin
         RequestBody := TStringStream.Create(Json, TEncoding.UTF8);
+
+      HTTPClient.HTTP.Request.Accept := 'application/json';
+      HTTPClient.HTTP.Request.ContentType := 'application/jsontoxml';
+      HTTPClient.HTTP.Request.CustomHeaders.FoldLines := False;
+      HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
+
+      URL := URL + '/v3/cfdi33/issue/json/' + Version;
+
+      try
+        Result := HTTPClient.Post(URL, RequestBody);
+      except
+        on E: EIdHTTPProtocolException do
+          Result := E.ErrorMessage;
+        on E: Exception do
+          Result := E.Message;
       end;
 
-      HTTP.Request.Accept := 'application/json';
-      HTTP.Request.ContentType := 'application/jsontoxml';
-      HTTP.Request.CustomHeaders.FoldLines := False;
-      HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
-
-      URL := URL+'/v3/cfdi33/issue/json/'+Version;
-      Result := HTTP.Post(URL, RequestBody);
-      HTTP.responseCode;
     finally
       RequestBody.Free;
     end;
-  except
-    on E: EIdHTTPProtocolException do
-    begin
-      Result := E.ErrorMessage;
-    end;
-    on E: Exception do
-    begin
-      Result := E.Message;
-    end;
+  finally
+    HTTPClient.Free;
   end;
 
-  HTTP.Free;
-  ReportMemoryLeaksOnShutdown := False;
 end;
-
-
 
 end.

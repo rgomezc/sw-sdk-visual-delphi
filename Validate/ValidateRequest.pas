@@ -15,12 +15,6 @@ uses
   System.JSON.Writers,
   System.JSON.Readers,
   System.JSON.BSON,
-  IdHTTP, IdGlobal,
-  IdCoder,
-  IdCoder3to4,
-  IdCoderMIME,
-  IdMultipartFormData,
-  IdGlobalProtocols,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
@@ -30,133 +24,52 @@ uses
   Data.Bind.Components,
   Data.Bind.ObjectScope,
   REST.Types,
-  Vcl.ComCtrls;
+  Vcl.ComCtrls,
+  SWHTTPClient, IdMultipartFormData, IdHTTP;
 
 function ValidateCfdiRequest(Url, Token, XML: string): String;
-function ValidateLrfcRequest(Url, Token, LRFC: string): String;
-function ValidateLcoRequest(Url, Token, NoCert: string): String;
 
 implementation
 
 function ValidateCfdiRequest(Url, Token, XML: string): String;
 var
-  HTTP: TIdHTTP;
-  RequestBody: TStream;
-  JSonValues: TJSONObject;
-  ResponseBody, boundary, body, sp: string;
+  HTTPClient: TSWHTTPClient;
   Params: TIdMultipartFormDataStream;
   Stream: TStringStream;
   StrList: TStreamWriter;
 begin
-
-  HTTP := TIdHTTP.Create;
-
+  HTTPClient := TSWHTTPClient.Create;
   try
-    Stream := TStringStream.Create('');
+    Stream := TStringStream.Create('', TEncoding.UTF8);
     StrList := TStreamWriter.Create('xml.xml', false, TEncoding.UTF8);
     StrList.WriteLine(XML);
     StrList.Free();
-  finally
-  end;
-  try
+    
     Params := TIdMultipartFormDataStream.Create;
     try
       Params.AddFile('XML', 'xml.xml', 'multipart/form-data');
+      Url := Url + '/validate/cfdi/';
+      HTTPClient.HTTP.Request.CustomHeaders.FoldLines := false;
+      HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
       try
-        Url := Url + '/validate/cfdi33/';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
-        try
-          HTTP.Post(Url, Params, Stream);
-          Result := Stream.DataString;
-        except
-          on E: EIdHTTPProtocolException do
-            if (HTTP.ResponseCode > 300) and (HTTP.ResponseCode < 600) then
-              Result := E.ErrorMessage
-            else
-              Result := E.Message;
-        end;
-      finally
-        Params.Free;
+        HTTPClient.Post(Url, Params, Stream);
+        Result := Stream.DataString;
+      except
+        on E: EIdHTTPProtocolException do
+          if (HTTPClient.HTTP.ResponseCode > 300) and (HTTPClient.HTTP.ResponseCode < 600) then
+            Result := E.ErrorMessage
+          else
+            Result := E.Message;
       end;
     finally
+      Params.Free;
+      Stream.Free;
     end;
   finally
-    HTTP.Free;
+    HTTPClient.Free;
   end;
-  ReportMemoryLeaksOnShutdown := false;
 end;
 
-function ValidateLrfcRequest(Url, Token, LRFC: string): String;
-var
-  HTTP: TIdHTTP;
-  RequestBody: TStream;
-  ResponseBody: string;
-begin
-
-  HTTP := TIdHTTP.Create;
-  try
-    try
-      RequestBody := TStringStream.Create();
-      try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
-
-        try
-          Result := HTTP.Get(Url + '/lrfc/' + AnsiUpperCase(LRFC) + '/');
-        except
-          on E: EIdHTTPProtocolException do
-            if (HTTP.ResponseCode = 400) then
-              Result := E.ErrorMessage
-            else
-              Result := E.Message;
-        end;
-      finally
-      end;
-    finally
-    end;
-  finally
-    HTTP.Free;
-  end;
-  ReportMemoryLeaksOnShutdown := false;
-end;
-
-function ValidateLcoRequest(Url, Token, NoCert: string): String;
-var
-  HTTP: TIdHTTP;
-  RequestBody: TStream;
-  ResponseBody: string;
-begin
-
-  HTTP := TIdHTTP.Create;
-  try
-    try
-      RequestBody := TStringStream.Create();
-      try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + Token);
-
-        try
-          Result := HTTP.Get(Url + '/lco/' + NoCert);
-        except
-          on E: EIdHTTPProtocolException do
-            if (HTTP.ResponseCode = 400) then
-              Result := E.ErrorMessage
-            else
-              Result := E.Message;
-        end;
-      finally
-      end;
-    finally
-    end;
-  finally
-    HTTP.Free;
-  end;
-  ReportMemoryLeaksOnShutdown := false;
-end;
 
 end.
+

@@ -34,7 +34,8 @@ uses
 	CancelationRelationsResponse,
 	BalanceResponse,
 	Balance,
-	BalanceRequest;
+	BalanceRequest,
+	SWHTTPClient;
 
 function fechaDeVencimiento(expiresIn: String): String;
 
@@ -332,7 +333,6 @@ type
     Label110: TLabel;
     Label111: TLabel;
     Label112: TLabel;
-    Label113: TLabel;
     Label114: TLabel;
     Label115: TLabel;
     Label116: TLabel;
@@ -343,7 +343,6 @@ type
     txtIdClienteUsuario: TEdit;
     txtSaldoTimbres: TEdit;
     txtTimbresUtilizados: TEdit;
-    txtFechaExpiracion: TEdit;
     txtUnlimited: TEdit;
     txtTimbresAsignados: TEdit;
     txtStatusBalance: TEdit;
@@ -362,6 +361,8 @@ type
     txtPfxFolioSust: TEdit;
     Label36: TLabel;
     txtPfxMotivo: TEdit;
+    Label37: TLabel;
+    txtURLApi: TEdit;
 		procedure Button1Click(Sender: TObject);
 		procedure Button3Click(Sender: TObject);
 		procedure btnTimbrarV1Click(Sender: TObject);
@@ -467,8 +468,8 @@ var
 	StampResponse: TStampResponseV4;
 begin
 	cleanStamp();
-	url := txtURL.Text;
-	token := txtToken.Text;
+	url := txtUrl.Text;
+	token := txtToken.text;
 	xml := stampXmlIn.Text;
 
 	StampResponse := Stamp.StampV4(url, token, xml);
@@ -905,17 +906,16 @@ var
 	url, token: String;
 	BalanceResponse: TBalanceResponse;
 begin
-	url := txtURL.Text;
+	url := txtURLApi.Text;
 	token := txtToken.Text;
-	BalanceResponse := Balance.AccountBalance(url,token);
+	BalanceResponse := Balance.AccountBalance(url, token);
 	try
-		txtIdSaldoCliente.Text := BalanceResponse.data.idSaldoCliente;
-		txtIdClienteUsuario.Text := BalanceResponse.data.idClienteUsuario;
-		txtSaldoTimbres.Text := inttostr(BalanceResponse.data.saldoTimbres);
-		txtTimbresUtilizados.Text := inttostr(BalanceResponse.data.timbresUtilizados);
-		txtFechaExpiracion.Text := BalanceResponse.data.fechaExpiracion;
-		txtUnlimited.Text := BoolToStr(BalanceResponse.data.unlimited);
-		txtTimbresAsignados.Text := inttostr(BalanceResponse.data.timbresAsignados);
+		txtIdSaldoCliente.Text := BalanceResponse.data.idUserBalance;
+		txtIdClienteUsuario.Text := BalanceResponse.data.idUser;
+		txtSaldoTimbres.Text := inttostr(BalanceResponse.data.stampsBalance);
+		txtTimbresUtilizados.Text := inttostr(BalanceResponse.data.stampsUsed);
+		txtUnlimited.Text := BoolToStr(BalanceResponse.data.isUnlimited);
+		txtTimbresAsignados.Text := inttostr(BalanceResponse.data.stampsAssigned);
 		txtStatusBalance.Text := BalanceResponse.status;
 	except
 		txtMessageBalance.Text := UTF8ToWideString(BalanceResponse.message);
@@ -1336,5 +1336,6 @@ begin
 	txtJsonMessage.Text := '';
 	txtJsonMessageDetail.Text := '';
 end;
+
 
 end.

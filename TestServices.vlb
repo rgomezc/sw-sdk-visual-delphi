@@ -179,7 +179,7 @@ Coordinates=641,282,60,58
 Coordinates=379,350,126,58
 
 []
-Coordinates=2158,232,182,58
+Coordinates=628,875,60,58
 Visible=True
 ExplicitSubNodes=
 
@@ -651,9 +651,6 @@ Coordinates=248,779,60,58
 [txtValidaLcoMessage]
 Coordinates=1328,713,137,58
 
-[Label38]
-Coordinates=628,875,60,58
-
 [txtCsdMessageDetail]
 Coordinates=1677,540,136,58
 
@@ -1017,9 +1014,6 @@ Coordinates=868,386,67,58
 [Label110]
 Coordinates=1690,1295,67,58
 
-[txtFechaExpiracion]
-Coordinates=1057,463,124,58
-
 [Label126]
 Coordinates=627,446,67,58
 
@@ -1073,9 +1067,6 @@ Coordinates=1189,1,160,58
 
 [Label122]
 Coordinates=1065,963,67,58
-
-[Label113]
-Coordinates=366,587,67,58
 
 [txtTimbresUtilizados]
 Coordinates=1916,771,131,58
