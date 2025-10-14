@@ -13,18 +13,12 @@ uses
   System.JSON.Writers,
   System.JSON.Readers,
   System.JSON.BSON,
-  IdHTTP,
-  IdGlobal,
-  IdCoder,
-  IdCoder3to4,
-  IdCoderMIME,
-  IdMultipartFormData,
-  IdGlobalProtocols,
   IPPeerClient,
   REST.Client,
   Data.Bind.Components,
   Data.Bind.ObjectScope,
-  REST.Types;
+  REST.Types,
+  SWHTTPClient, IdHTTP;
 
 function RequestJson(url, token, body, path: String): String;
 function RequestUrl(url, token, rfcEmisor, uuid, pathReq: String): String;  overload;
@@ -43,152 +37,115 @@ implementation
 
 function RequestJson(url, token, body, path: String): String;
 var
-  HTTP: TIdHTTP;
+  HTTPClient: TSWHTTPClient;
   RequestBody: TStream;
-  ResponseBody: string;
-  IsUTF8: Boolean;
 begin
-  HTTP := TIdHTTP.Create;
+  HTTPClient := TSWHTTPClient.Create;
   try
     try
-      IsUTF8 := TEncoding.UTF8.GetString(TEncoding.UTF8.GetBytes(body)) = body;
-      RequestBody := TStringStream.Create(body);
+      RequestBody := TStringStream.Create(body, TEncoding.UTF8);
       try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
+        HTTPClient.HTTP.Request.Accept := 'application/json';
+        HTTPClient.HTTP.Request.ContentType := 'application/json';
+        HTTPClient.HTTP.Request.CustomHeaders.FoldLines := false;
+        HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
         url := url + path;
-        ResponseBody := HTTP.Post(url, RequestBody);
-        Result := String(ResponseBody);
+        Result := HTTPClient.Post(url, RequestBody);
       finally
         RequestBody.Free;
       end;
     except
       on E: EIdHTTPProtocolException do
-      begin
         Result := E.ErrorMessage;
-      end;
       on E: Exception do
-      begin
         Result := E.Message;
-      end;
     end;
   finally
-    HTTP.Free;
+    HTTPClient.Free;
   end;
-  ReportMemoryLeaksOnShutdown := false;
 end;
 
 function RequestUrl(url, token, rfcEmisor, uuid, pathReq: String): String;
 var
-  HTTP: TIdHTTP;
+  HTTPClient: TSWHTTPClient;
   RequestBody: TStream;
-  ResponseBody: string;
 begin
-  HTTP := TIdHTTP.Create;
+  HTTPClient := TSWHTTPClient.Create;
   try
     try
-      RequestBody := TStringStream.Create();
+      RequestBody := TStringStream.Create('', TEncoding.UTF8);
       try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
+        HTTPClient.HTTP.Request.Accept := 'application/json';
+        HTTPClient.HTTP.Request.ContentType := 'application/json';
+        HTTPClient.HTTP.Request.CustomHeaders.FoldLines := false;
+        HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
         url := url + pathReq + rfcEmisor + '/' + uuid + '/';
-        ResponseBody := HTTP.Post(url, RequestBody);
-        Result := String(ResponseBody);
+        Result := HTTPClient.Post(url, RequestBody);
       finally
         RequestBody.Free;
       end;
     except
       on E: EIdHTTPProtocolException do
-      begin
         Result := E.ErrorMessage;
-      end;
       on E: Exception do
-      begin
         Result := E.Message;
-      end;
     end;
   finally
-    HTTP.Free;
+    HTTPClient.Free;
   end;
-  ReportMemoryLeaksOnShutdown := false;
 end;
 
 function RequestUrl(url, token, rfcEmisor, uuid, motivo, folioSustitucion, pathReq: String): String; overload; overload;
 var
-  HTTP: TIdHTTP;
+  HTTPClient: TSWHTTPClient;
   RequestBody: TStream;
-  ResponseBody: string;
 begin
-  HTTP := TIdHTTP.Create;
+  HTTPClient := TSWHTTPClient.Create;
   try
     try
-      RequestBody := TStringStream.Create();
+      RequestBody := TStringStream.Create('', TEncoding.UTF8);
       try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
+        HTTPClient.HTTP.Request.Accept := 'application/json';
+        HTTPClient.HTTP.Request.ContentType := 'application/json';
+        HTTPClient.HTTP.Request.CustomHeaders.FoldLines := false;
+        HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
         url := url + pathReq + rfcEmisor + '/' + uuid + '/' + motivo + '/' + folioSustitucion;
-        ResponseBody := HTTP.Post(url, RequestBody);
-        Result := String(ResponseBody);
+        Result := HTTPClient.Post(url, RequestBody);
       finally
         RequestBody.Free;
       end;
     except
       on E: EIdHTTPProtocolException do
-      begin
         Result := E.ErrorMessage;
-      end;
       on E: Exception do
-      begin
         Result := E.Message;
-      end;
     end;
   finally
-    HTTP.Free;
+    HTTPClient.Free;
   end;
-  ReportMemoryLeaksOnShutdown := false;
 end;
 
 function RequestUrlGet(url, token, rfcEmisor, pathReq: String): String;
 var
-  HTTP: TIdHTTP;
-  RequestBody: TStream;
-  ResponseBody: string;
+  HTTPClient: TSWHTTPClient;
 begin
-  HTTP := TIdHTTP.Create;
+  HTTPClient := TSWHTTPClient.Create;
   try
     try
-      RequestBody := TStringStream.Create();
-      try
-        HTTP.Request.Accept := 'application/json';
-        HTTP.Request.ContentType := 'application/json';
-        HTTP.Request.CustomHeaders.FoldLines := false;
-        HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
-        url := url + pathReq + rfcEmisor;
-        ResponseBody := HTTP.Get(url);
-        Result := String(ResponseBody);
-      finally
-        RequestBody.Free;
-      end;
+      HTTPClient.HTTP.Request.Accept := 'application/json';
+      HTTPClient.HTTP.Request.CustomHeaders.FoldLines := false;
+      HTTPClient.HTTP.Request.CustomHeaders.Add('Authorization:Bearer ' + token);
+      url := url + pathReq + rfcEmisor;
+      Result := HTTPClient.Get(url);
     except
       on E: EIdHTTPProtocolException do
-      begin
         Result := E.ErrorMessage;
-      end;
       on E: Exception do
-      begin
         Result := E.Message;
-      end;
     end;
   finally
-    HTTP.Free;
+    HTTPClient.Free;
   end;
-  ReportMemoryLeaksOnShutdown := false;
 end;
 
 function CsdBody(uuid, password, rfcEmisor, motivo, folioSustitucion, b64Cer, b64Key: String): String;
@@ -253,3 +210,4 @@ begin
 end;
 
 end.
+
