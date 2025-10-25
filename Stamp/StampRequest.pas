@@ -1,20 +1,19 @@
 unit StampRequest;
 
 interface
-uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, IPPeerClient, Vcl.StdCtrls, REST.Client,
-  Data.Bind.Components, Data.Bind.ObjectScope, REST.Types,
-  REST.Json,
-  Vcl.ComCtrls, Helper, strUtils, SWHTTPClient, IdMultipartFormData, IdHTTP;
 
 function StampReq(URL, Token, XML, Path: String; b64 : Boolean = false): String;
 
 implementation
+
+uses
+  System.SysUtils,
+  System.Classes,
+  Helper,
+  strUtils,
+  SWHTTPClient,
+  IdMultipartFormData,
+  IdHTTP;
 
 function StampReq(URL, Token, XML, Path: String; b64: Boolean): String;
 var

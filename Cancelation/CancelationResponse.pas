@@ -2,8 +2,6 @@ unit CancelationResponse;
 
 interface
 
-uses Generics.Collections, Rest.Json;
-
 type
 
   TUuidClass = class
@@ -46,6 +44,9 @@ type
   end;
 
 implementation
+
+uses
+	Generics.Collections, Rest.Json;
 
 { TUuidClass }
 
