@@ -2,8 +2,6 @@ unit CancelationResponse;
 
 interface
 
-uses Generics.Collections, Rest.Json;
-
 type
 
   TUuidClass = class
@@ -34,6 +32,8 @@ type
     FMessage: String;
     FMessageDetail: String;
     FStatus: String;
+    FJsonOriginalText: String;
+
   public
     property data: TDataClass read FData write FData;
     property message: String read FMessage write FMessage;
@@ -46,6 +46,9 @@ type
   end;
 
 implementation
+
+uses
+	Generics.Collections, Rest.Json;
 
 { TUuidClass }
 
@@ -99,13 +102,14 @@ end;
 
 function TCancelationResponse.ToJsonString: string;
 begin
-  result := TJson.ObjectToJsonString(self);
+  result := FjsonOriginalText;
 end;
 
 class function TCancelationResponse.FromJsonString(AJsonString: string)
   : TCancelationResponse;
 begin
-  result := TJson.JsonToObject<TCancelationResponse>(AJsonString)
+  result := TJson.JsonToObject<TCancelationResponse>(AJsonString);
+  result.FjsonOriginalText := AJsonString;
 end;
 
 end.
