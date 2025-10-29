@@ -22,7 +22,6 @@ var
   HTTPClient: TSWHTTPClient;
   RequestBody: TStream;
   JSONBody: TJSONObject;
-  ErrorResponse: TJSONObject;
 begin
   HTTPClient := TSWHTTPClient.Create;
   try
